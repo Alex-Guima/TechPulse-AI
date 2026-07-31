@@ -1,1 +1,0 @@
-# TechPulse-AI
