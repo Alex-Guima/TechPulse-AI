@@ -1,0 +1,94 @@
+"""Ponto de entrada da aplicação TechPulse AI (fase 1 - coleta).
+
+Monta as fontes de notícias configuradas, executa a coleta através do
+`NewsCollectorService` e imprime os resultados no terminal, apenas para
+validação manual. Não há persistência nem interface gráfica nesta etapa.
+"""
+from __future__ import annotations
+
+import os
+
+from dotenv import load_dotenv
+
+from app.collectors.devto_collector import DevToCollector
+from app.collectors.github_collector import GITHUB_BLOG_FEED_URL, GitHubBlogCollector
+from app.collectors.hackernews_collector import HackerNewsCollector
+from app.collectors.rss_collector import RSSCollector
+from app.models.article import Article
+from app.normalizers.devto_normalizer import normalize_devto_entries
+from app.normalizers.github_normalizer import normalize_github_entries
+from app.normalizers.hackernews_normalizer import normalize_hackernews_entries
+from app.normalizers.rss_normalizer import normalize_rss_entries
+from app.services.news_collector_service import NewsCollectorService, NewsSource
+
+DEFAULT_TECHCRUNCH_RSS_URL = "https://techcrunch.com/feed/"
+
+
+def build_service() -> NewsCollectorService:
+    """Monta o `NewsCollectorService` com todas as fontes da primeira etapa.
+
+    URLs de feeds podem ser sobrescritas via variáveis de ambiente
+    (ver `.env.example`), o que facilita testes e trocas de fonte sem
+    alterar código.
+
+    Returns:
+        Instância de `NewsCollectorService` pronta para coletar.
+    """
+    techcrunch_url = os.getenv("TECHCRUNCH_RSS_URL", DEFAULT_TECHCRUNCH_RSS_URL)
+    github_url = os.getenv("GITHUB_BLOG_RSS_URL", GITHUB_BLOG_FEED_URL)
+    hackernews_limit = int(os.getenv("HACKERNEWS_LIMIT", "20"))
+    devto_per_page = int(os.getenv("DEVTO_PER_PAGE", "20"))
+
+    sources = [
+        NewsSource(
+            name="TechCrunch",
+            collector=RSSCollector(feed_url=techcrunch_url, source_name="TechCrunch"),
+            normalizer=normalize_rss_entries,
+        ),
+        NewsSource(
+            name="GitHub Blog",
+            collector=GitHubBlogCollector(feed_url=github_url),
+            normalizer=normalize_github_entries,
+        ),
+        NewsSource(
+            name="Hacker News",
+            collector=HackerNewsCollector(limit=hackernews_limit),
+            normalizer=normalize_hackernews_entries,
+        ),
+        NewsSource(
+            name="Dev.to",
+            collector=DevToCollector(per_page=devto_per_page),
+            normalizer=normalize_devto_entries,
+        ),
+    ]
+
+    return NewsCollectorService(sources=sources)
+
+
+def print_articles(articles: list[Article]) -> None:
+    """Imprime os artigos coletados no terminal, para validação manual.
+
+    Args:
+        articles: Lista de `Article` a serem exibidos.
+    """
+    print(f"\nTotal de artigos coletados: {len(articles)}\n")
+    print("-" * 80)
+    for article in articles:
+        published = article.published_at.isoformat() if article.published_at else "N/A"
+        print(f"Título : {article.title}")
+        print(f"Fonte  : {article.source}")
+        print(f"Data   : {published}")
+        print(f"URL    : {article.url}")
+        print("-" * 80)
+
+
+def main() -> None:
+    """Executa a coleta completa e imprime os resultados no terminal."""
+    load_dotenv()
+    service = build_service()
+    articles = service.collect_all()
+    print_articles(articles)
+
+
+if __name__ == "__main__":
+    main()
