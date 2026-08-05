@@ -41,6 +41,6 @@ class Article(BaseModel):
         default_factory=list, description="Lista de tags/categorias associadas à notícia."
     )
 
-    class Config:
+    class ConfigDict:
         frozen = False
         str_strip_whitespace = True

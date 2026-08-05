@@ -7,7 +7,7 @@ on:
     branches: ["dev"]
 
 env:
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: '3.14'
 
 jobs:
   lint:
@@ -28,7 +28,7 @@ jobs:
           uv sync && uv add flake8
 
       - name: Run Flake8 linter
-        run: uv run flake8 .
+        run: uv run flake8 ./src
 
   test:
     runs-on: ubuntu-latest
