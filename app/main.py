@@ -1,71 +1,68 @@
-"""Ponto de entrada da aplicação TechPulse AI.
+"""Ponto de entrada da aplicação TechPulse AI (fase 1 - coleta).
 
 Monta as fontes de notícias configuradas, executa a coleta através do
-`NewsCollectorService`, persiste os artigos novos no PostgreSQL (via
-`ArticleRepository`) e imprime no terminal tanto os artigos coletados
-quanto as estatísticas da execução. Ainda não há interface gráfica
-nesta etapa.
+`NewsCollectorService` e imprime os resultados no terminal, apenas para
+validação manual. Não há persistência nem interface gráfica nesta etapa.
 """
 from __future__ import annotations
 
+import os
+
+from dotenv import load_dotenv
+
 from app.collectors.devto_collector import DevToCollector
-from app.collectors.github_collector import GitHubBlogCollector
+from app.collectors.github_collector import GITHUB_BLOG_FEED_URL, GitHubBlogCollector
 from app.collectors.hackernews_collector import HackerNewsCollector
 from app.collectors.rss_collector import RSSCollector
-from app.config.settings import get_settings
 from app.models.article import Article
 from app.normalizers.devto_normalizer import normalize_devto_entries
 from app.normalizers.github_normalizer import normalize_github_entries
 from app.normalizers.hackernews_normalizer import normalize_hackernews_entries
 from app.normalizers.rss_normalizer import normalize_rss_entries
-from app.repositories.article_repository import ArticleRepository
 from app.services.news_collector_service import NewsCollectorService, NewsSource
 
+DEFAULT_TECHCRUNCH_RSS_URL = "https://techcrunch.com/feed/"
 
-def build_service(repository: ArticleRepository | None = None) -> NewsCollectorService:
+
+def build_service() -> NewsCollectorService:
     """Monta o `NewsCollectorService` com todas as fontes da primeira etapa.
 
-    Toda a configuração (URLs de feeds, limites de coleta) vem de
-    `Settings` (`app.config.settings`), que por sua vez lê o `.env` —
-    este módulo não lê nenhuma variável de ambiente diretamente.
-
-    Args:
-        repository: Repositório opcional para persistência dos artigos
-            coletados (Fase 2). Se omitido, o serviço se comporta como
-            na Fase 1 (`collect_all` funciona normalmente; apenas
-            `collect_and_persist` exige um repositório).
+    URLs de feeds podem ser sobrescritas via variáveis de ambiente
+    (ver `.env.example`), o que facilita testes e trocas de fonte sem
+    alterar código.
 
     Returns:
         Instância de `NewsCollectorService` pronta para coletar.
     """
-    settings = get_settings()
+    techcrunch_url = os.getenv("TECHCRUNCH_RSS_URL", DEFAULT_TECHCRUNCH_RSS_URL)
+    github_url = os.getenv("GITHUB_BLOG_RSS_URL", GITHUB_BLOG_FEED_URL)
+    hackernews_limit = int(os.getenv("HACKERNEWS_LIMIT", "20"))
+    devto_per_page = int(os.getenv("DEVTO_PER_PAGE", "20"))
 
     sources = [
         NewsSource(
             name="TechCrunch",
-            collector=RSSCollector(
-                feed_url=settings.techcrunch_rss_url, source_name="TechCrunch"
-            ),
+            collector=RSSCollector(feed_url=techcrunch_url, source_name="TechCrunch"),
             normalizer=normalize_rss_entries,
         ),
         NewsSource(
             name="GitHub Blog",
-            collector=GitHubBlogCollector(feed_url=settings.github_blog_rss_url),
+            collector=GitHubBlogCollector(feed_url=github_url),
             normalizer=normalize_github_entries,
         ),
         NewsSource(
             name="Hacker News",
-            collector=HackerNewsCollector(limit=settings.hackernews_limit),
+            collector=HackerNewsCollector(limit=hackernews_limit),
             normalizer=normalize_hackernews_entries,
         ),
         NewsSource(
             name="Dev.to",
-            collector=DevToCollector(per_page=settings.devto_per_page),
+            collector=DevToCollector(per_page=devto_per_page),
             normalizer=normalize_devto_entries,
         ),
     ]
 
-    return NewsCollectorService(sources=sources, repository=repository)
+    return NewsCollectorService(sources=sources)
 
 
 def print_articles(articles: list[Article]) -> None:
@@ -86,13 +83,11 @@ def print_articles(articles: list[Article]) -> None:
 
 
 def main() -> None:
-    """Executa a coleta, persiste os artigos e imprime resultados/estatísticas."""
-    repository = ArticleRepository()
-    service = build_service(repository=repository)
-
-    result = service.collect_and_persist()
-    print_articles(result.articles)
-    print(result.stats.as_report())
+    """Executa a coleta completa e imprime os resultados no terminal."""
+    load_dotenv()
+    service = build_service()
+    articles = service.collect_all()
+    print_articles(articles)
 
 
 if __name__ == "__main__":

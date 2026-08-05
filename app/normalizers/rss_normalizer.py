@@ -21,7 +21,7 @@ def normalize_rss_entries(raw_entries: List[Dict[str, Any]]) -> List[Article]:
     for entry in raw_entries:
         articles.append(
             Article(
-                external_id=entry.get("id"),
+                id=entry.get("id"),
                 title=clean_text(entry.get("title")) or "Sem título",
                 url=entry.get("link") or "",
                 author=clean_text(entry.get("author")),
