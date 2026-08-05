@@ -29,6 +29,8 @@ def test_normalize_rss_entries_maps_fields_correctly():
     assert article.summary == "Resumo com html"
     assert article.tags == ["ai", "startups"]
     assert article.published_at is not None
+    assert article.external_id == "tc-1"
+    assert article.id is None
 
 
 def test_normalize_github_entries_reuses_rss_normalizer():
@@ -50,6 +52,7 @@ def test_normalize_github_entries_reuses_rss_normalizer():
 
     assert len(articles) == 1
     assert articles[0].source == "GitHub Blog"
+    assert articles[0].external_id == "gh-1"
 
 
 def test_normalize_hackernews_entries_skips_items_without_title():
@@ -65,6 +68,8 @@ def test_normalize_hackernews_entries_skips_items_without_title():
     assert articles[0].title == "Título válido"
     assert articles[0].url == "https://news.ycombinator.com/item?id=1"
     assert articles[0].source == "Hacker News"
+    assert articles[0].external_id == "1"
+    assert articles[0].id is None
 
 
 def test_normalize_devto_entries_maps_fields_correctly():
@@ -88,3 +93,5 @@ def test_normalize_devto_entries_maps_fields_correctly():
     assert article.author == "Autor Dev"
     assert article.tags == ["python", "webdev"]
     assert article.source == "Dev.to"
+    assert article.external_id == "42"
+    assert article.id is None

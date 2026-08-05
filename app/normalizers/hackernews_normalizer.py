@@ -28,7 +28,7 @@ def normalize_hackernews_entries(raw_items: List[Dict[str, Any]]) -> List[Articl
         story_id = item.get("id")
         articles.append(
             Article(
-                id=str(story_id) if story_id is not None else None,
+                external_id=str(story_id) if story_id is not None else None,
                 title=clean_text(item.get("title")) or "Sem título",
                 url=item.get("url") or f"https://news.ycombinator.com/item?id={story_id}",
                 author=item.get("by"),
