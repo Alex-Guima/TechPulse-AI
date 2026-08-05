@@ -28,7 +28,7 @@ jobs:
           uv sync && uv add flake8
 
       - name: Run Flake8 linter
-        run: flake8 .
+        run: uv run flake8 .
 
   test:
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
           uv sync && uv add pytest
 
       - name: Run tests
-        run: pytest
+        run: uv run pytest
   scan:
     runs-on: ubuntu-latest
     steps:
@@ -67,7 +67,7 @@ jobs:
           uv sync && uv add bandit
 
       - name: Run Bandit security scan
-        run: bandit app/*.py -f json -o bandit_report.json -n 3 -lll
+        run: uv run bandit app/*.py -f json -o bandit_report.json -n 3 -lll
 
       - name: Upload Bandit report
         uses: actions/upload-artifact@v7
