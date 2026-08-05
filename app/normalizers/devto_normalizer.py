@@ -22,7 +22,7 @@ def normalize_devto_entries(raw_items: List[Dict[str, Any]]) -> List[Article]:
         user = item.get("user") or {}
         articles.append(
             Article(
-                id=str(item.get("id")) if item.get("id") is not None else None,
+                external_id=str(item.get("id")) if item.get("id") is not None else None,
                 title=clean_text(item.get("title")) or "Sem título",
                 url=item.get("url") or "",
                 author=user.get("name"),
