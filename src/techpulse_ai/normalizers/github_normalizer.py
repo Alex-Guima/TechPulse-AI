@@ -7,13 +7,13 @@ do GitHub de forma independente, caso a fonte mude no futuro.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
-from app.models.article import Article
-from app.normalizers.rss_normalizer import normalize_rss_entries
+from techpulse_ai.models.article import Article
+from techpulse_ai.normalizers.rss_normalizer import normalize_rss_entries
 
 
-def normalize_github_entries(raw_entries: List[Dict[str, Any]]) -> List[Article]:
+def normalize_github_entries(raw_entries: list[dict[str, Any]]) -> list[Article]:
     """Converte entradas brutas do GitHub Blog em uma lista de `Article`.
 
     Args:

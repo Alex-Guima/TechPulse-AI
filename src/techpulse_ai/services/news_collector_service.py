@@ -9,13 +9,14 @@ e também torna o serviço facilmente testável com fontes falsas
 """
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, List
+from typing import Any
 
-from app.collectors.base import BaseCollector
-from app.models.article import Article
+from techpulse_ai.collectors.base import BaseCollector
+from techpulse_ai.models.article import Article
 
-NormalizerFunc = Callable[[List[Any]], List[Article]]
+NormalizerFunc = Callable[[list[Any]], list[Article]]
 
 
 @dataclass(frozen=True)
@@ -41,10 +42,10 @@ class NewsCollectorService:
         sources: Lista de `NewsSource` a serem executadas.
     """
 
-    def __init__(self, sources: List[NewsSource]) -> None:
+    def __init__(self, sources: list[NewsSource]) -> None:
         self.sources = sources
 
-    def collect_all(self) -> List[Article]:
+    def collect_all(self) -> list[Article]:
         """Executa cada fonte configurada e retorna a lista consolidada.
 
         Uma falha em uma fonte específica (ex: indisponibilidade de
@@ -55,7 +56,7 @@ class NewsCollectorService:
             Lista única de `Article`, reunindo o resultado de todas as
             fontes que executaram com sucesso.
         """
-        all_articles: List[Article] = []
+        all_articles: list[Article] = []
 
         for source in self.sources:
             try:

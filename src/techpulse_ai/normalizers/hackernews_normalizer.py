@@ -1,14 +1,14 @@
 """Normalizador para itens brutos vindos de `HackerNewsCollector`."""
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
-from app.models.article import Article
-from app.utils.dates import parse_date
-from app.utils.text import clean_text
+from techpulse_ai.models.article import Article
+from techpulse_ai.utils.dates import parse_date
+from techpulse_ai.utils.text import clean_text
 
 
-def normalize_hackernews_entries(raw_items: List[Dict[str, Any]]) -> List[Article]:
+def normalize_hackernews_entries(raw_items: list[dict[str, Any]]) -> list[Article]:
     """Converte itens brutos da API do Hacker News em uma lista de `Article`.
 
     Itens do tipo "job" ou sem título são ignorados, pois não representam
@@ -20,7 +20,7 @@ def normalize_hackernews_entries(raw_items: List[Dict[str, Any]]) -> List[Articl
     Returns:
         Lista de `Article` já validados e padronizados.
     """
-    articles: List[Article] = []
+    articles: list[Article] = []
     for item in raw_items:
         if not item or not item.get("title"):
             continue

@@ -6,12 +6,11 @@ que os normalizadores não precisem lidar com `datetime` diretamente.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
-from typing import Optional, Union
 
 
-def parse_date(value: Optional[Union[str, int, float]]) -> Optional[datetime]:
+def parse_date(value: str | float | None) -> datetime | None:
     """Converte um valor de data em diversos formatos para `datetime`.
 
     Suporta:
@@ -30,7 +29,7 @@ def parse_date(value: Optional[Union[str, int, float]]) -> Optional[datetime]:
         return None
 
     if isinstance(value, (int, float)):
-        return datetime.fromtimestamp(value, tz=timezone.utc)
+        return datetime.fromtimestamp(value, tz=UTC)
 
     if isinstance(value, str):
         value = value.strip()

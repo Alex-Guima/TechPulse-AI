@@ -1,14 +1,14 @@
 """Normalizador para itens brutos vindos de `DevToCollector`."""
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
-from app.models.article import Article
-from app.utils.dates import parse_date
-from app.utils.text import clean_text
+from techpulse_ai.models.article import Article
+from techpulse_ai.utils.dates import parse_date
+from techpulse_ai.utils.text import clean_text
 
 
-def normalize_devto_entries(raw_items: List[Dict[str, Any]]) -> List[Article]:
+def normalize_devto_entries(raw_items: list[dict[str, Any]]) -> list[Article]:
     """Converte artigos brutos da API do Dev.to em uma lista de `Article`.
 
     Args:
@@ -17,7 +17,7 @@ def normalize_devto_entries(raw_items: List[Dict[str, Any]]) -> List[Article]:
     Returns:
         Lista de `Article` já validados e padronizados.
     """
-    articles: List[Article] = []
+    articles: list[Article] = []
     for item in raw_items:
         user = item.get("user") or {}
         articles.append(

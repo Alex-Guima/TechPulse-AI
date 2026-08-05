@@ -6,11 +6,11 @@ devolvidos como estão para o normalizador correspondente.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 import requests
 
-from app.collectors.base import BaseCollector
+from techpulse_ai.collectors.base import BaseCollector
 
 TOP_STORIES_URL = "https://hacker-news.firebaseio.com/v0/topstories.json"
 ITEM_URL_TEMPLATE = "https://hacker-news.firebaseio.com/v0/item/{item_id}.json"
@@ -28,7 +28,7 @@ class HackerNewsCollector(BaseCollector):
         self.limit = limit
         self.timeout = timeout
 
-    def collect(self) -> List[Dict[str, Any]]:
+    def collect(self) -> list[dict[str, Any]]:
         """Busca os IDs das top stories e retorna seus dados brutos.
 
         Returns:
@@ -39,7 +39,7 @@ class HackerNewsCollector(BaseCollector):
         response.raise_for_status()
         story_ids = response.json()[: self.limit]
 
-        raw_items: List[Dict[str, Any]] = []
+        raw_items: list[dict[str, Any]] = []
         for story_id in story_ids:
             item_response = requests.get(
                 ITEM_URL_TEMPLATE.format(item_id=story_id), timeout=self.timeout

@@ -1,5 +1,17 @@
-.env
-venv
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
 
-**/__pycache__/
-**/*.pyc
+# Virtual environments
+.venv
+
+# IDE settings
+.vscode/
+.idea/
+
+# Environment variables
+.env

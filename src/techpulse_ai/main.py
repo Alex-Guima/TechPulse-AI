@@ -4,22 +4,26 @@ Monta as fontes de notícias configuradas, executa a coleta através do
 `NewsCollectorService` e imprime os resultados no terminal, apenas para
 validação manual. Não há persistência nem interface gráfica nesta etapa.
 """
-from __future__ import annotations
-
 import os
 
 from dotenv import load_dotenv
 
-from app.collectors.devto_collector import DevToCollector
-from app.collectors.github_collector import GITHUB_BLOG_FEED_URL, GitHubBlogCollector
-from app.collectors.hackernews_collector import HackerNewsCollector
-from app.collectors.rss_collector import RSSCollector
-from app.models.article import Article
-from app.normalizers.devto_normalizer import normalize_devto_entries
-from app.normalizers.github_normalizer import normalize_github_entries
-from app.normalizers.hackernews_normalizer import normalize_hackernews_entries
-from app.normalizers.rss_normalizer import normalize_rss_entries
-from app.services.news_collector_service import NewsCollectorService, NewsSource
+from techpulse_ai.collectors.devto_collector import DevToCollector
+from techpulse_ai.collectors.github_collector import (
+    GITHUB_BLOG_FEED_URL,
+    GitHubBlogCollector,
+)
+from techpulse_ai.collectors.hackernews_collector import HackerNewsCollector
+from techpulse_ai.collectors.rss_collector import RSSCollector
+from techpulse_ai.models.article import Article
+from techpulse_ai.normalizers.devto_normalizer import normalize_devto_entries
+from techpulse_ai.normalizers.github_normalizer import normalize_github_entries
+from techpulse_ai.normalizers.hackernews_normalizer import normalize_hackernews_entries
+from techpulse_ai.normalizers.rss_normalizer import normalize_rss_entries
+from techpulse_ai.services.news_collector_service import (
+    NewsCollectorService,
+    NewsSource,
+)
 
 DEFAULT_TECHCRUNCH_RSS_URL = "https://techcrunch.com/feed/"
 

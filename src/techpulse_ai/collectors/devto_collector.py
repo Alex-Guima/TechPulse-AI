@@ -5,11 +5,11 @@ API, sem qualquer transformação.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 import requests
 
-from app.collectors.base import BaseCollector
+from techpulse_ai.collectors.base import BaseCollector
 
 DEVTO_ARTICLES_URL = "https://dev.to/api/articles"
 
@@ -28,13 +28,13 @@ class DevToCollector(BaseCollector):
         self.per_page = per_page
         self.timeout = timeout
 
-    def collect(self) -> List[Dict[str, Any]]:
+    def collect(self) -> list[dict[str, Any]]:
         """Busca artigos na API do Dev.to e retorna os dados brutos.
 
         Returns:
             Lista de dicts no formato original retornado pela API do Dev.to.
         """
-        params: Dict[str, Any] = {"per_page": self.per_page}
+        params: dict[str, Any] = {"per_page": self.per_page}
         if self.tag:
             params["tag"] = self.tag
 

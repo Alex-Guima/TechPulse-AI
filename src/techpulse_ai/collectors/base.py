@@ -8,7 +8,7 @@ normalizadores (`app.normalizers`).
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, List
+from typing import Any
 
 
 class BaseCollector(ABC):
@@ -20,7 +20,7 @@ class BaseCollector(ABC):
     """
 
     @abstractmethod
-    def collect(self) -> List[Any]:
+    def collect(self) -> list[Any]:
         """Busca e retorna os dados brutos da fonte.
 
         Returns:

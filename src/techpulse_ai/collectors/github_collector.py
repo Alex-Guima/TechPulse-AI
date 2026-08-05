@@ -7,7 +7,7 @@ API oficial do GitHub) sem impactar outras fontes que também usam RSS.
 """
 from __future__ import annotations
 
-from app.collectors.rss_collector import RSSCollector
+from techpulse_ai.collectors.rss_collector import RSSCollector
 
 GITHUB_BLOG_FEED_URL = "https://github.blog/feed/"
 

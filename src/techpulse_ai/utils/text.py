@@ -6,12 +6,11 @@ normalizadores fiquem focados apenas na regra de mapeamento de campos.
 from __future__ import annotations
 
 import re
-from typing import Optional
 
 from bs4 import BeautifulSoup
 
 
-def remove_html(raw_html: Optional[str]) -> Optional[str]:
+def remove_html(raw_html: str | None) -> str | None:
     """Remove tags HTML de uma string, mantendo apenas o texto.
 
     Args:
@@ -25,7 +24,7 @@ def remove_html(raw_html: Optional[str]) -> Optional[str]:
     return BeautifulSoup(raw_html, "html.parser").get_text()
 
 
-def normalize_whitespace(text: Optional[str]) -> Optional[str]:
+def normalize_whitespace(text: str | None) -> str | None:
     """Colapsa espaços/quebras de linha repetidos e remove espaços nas bordas.
 
     Args:
@@ -39,7 +38,7 @@ def normalize_whitespace(text: Optional[str]) -> Optional[str]:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def clean_text(raw_html: Optional[str]) -> Optional[str]:
+def clean_text(raw_html: str | None) -> str | None:
     """Combina remoção de HTML e normalização de espaços em um único passo.
 
     Args:

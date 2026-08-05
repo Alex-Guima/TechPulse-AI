@@ -6,11 +6,11 @@ leitura de feeds.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 import feedparser
 
-from app.collectors.base import BaseCollector
+from techpulse_ai.collectors.base import BaseCollector
 
 
 class RSSCollector(BaseCollector):
@@ -25,9 +25,8 @@ class RSSCollector(BaseCollector):
         self.feed_url = feed_url
         self.source_name = source_name
 
-    def collect(self) -> List[Dict[str, Any]]:
+    def collect(self) -> list[dict[str, Any]]:
         """Faz o parse do feed e retorna as entradas brutas.
-
         Cada entrada é um dict simples contendo os campos originais do
         feedparser mais o nome da fonte, para uso posterior pelo
         normalizador.
@@ -35,9 +34,10 @@ class RSSCollector(BaseCollector):
         Returns:
             Lista de dicionários com os dados brutos de cada entrada.
         """
+
         parsed_feed = feedparser.parse(self.feed_url)
 
-        raw_entries: List[Dict[str, Any]] = []
+        raw_entries: list[dict[str, Any]] = []
         for entry in parsed_feed.entries:
             raw_entries.append(
                 {

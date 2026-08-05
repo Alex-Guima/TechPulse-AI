@@ -1,14 +1,14 @@
 """Normalizador para itens brutos vindos de `RSSCollector` (ex: TechCrunch)."""
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
-from app.models.article import Article
-from app.utils.dates import parse_date
-from app.utils.text import clean_text
+from techpulse_ai.models.article import Article
+from techpulse_ai.utils.dates import parse_date
+from techpulse_ai.utils.text import clean_text
 
 
-def normalize_rss_entries(raw_entries: List[Dict[str, Any]]) -> List[Article]:
+def normalize_rss_entries(raw_entries: list[dict[str, Any]]) -> list[Article]:
     """Converte entradas brutas de um feed RSS em uma lista de `Article`.
 
     Args:
@@ -17,7 +17,7 @@ def normalize_rss_entries(raw_entries: List[Dict[str, Any]]) -> List[Article]:
     Returns:
         Lista de `Article` já validados e padronizados.
     """
-    articles: List[Article] = []
+    articles: list[Article] = []
     for entry in raw_entries:
         articles.append(
             Article(
