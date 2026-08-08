@@ -95,6 +95,7 @@ def main() -> None:
     articles = service.collect_all()
     save_articles(articles)
 
+
 def save_articles(articles: list[Article]) -> None:
     with psycopg.connect(
         dbname=os.getenv("POSTGRES_DB"),
