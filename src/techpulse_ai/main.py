@@ -111,10 +111,11 @@ def main() -> None:
                 """)
         for article in articles:
             publicado_em = article.published_at.date() if article.published_at else None
-            cur.execute("""
+            cur.execute(
+                """
                     INSERT INTO articles (titulo, fonte, data_publicacao, url)
                     VALUES (%s, %s, %s, %s)
-                    """,
+                """,
                 (article.title, article.source, publicado_em, article.url)
             )
 
