@@ -93,6 +93,9 @@ def main() -> None:
     load_dotenv()
     service = build_service()
     articles = service.collect_all()
+    save_articles(articles)
+
+def save_articles(articles: list[Article]) -> None:
     with psycopg.connect(
         dbname=os.getenv("POSTGRES_DB"),
         user=os.getenv("POSTGRES_USER"),
@@ -106,7 +109,7 @@ def main() -> None:
                     titulo text,
                     fonte text,
                     data_publicacao date,
-                    url text
+                    url text unique
                 )
                 """)
         for article in articles:
@@ -114,7 +117,7 @@ def main() -> None:
             cur.execute(
                 """
                     INSERT INTO articles (titulo, fonte, data_publicacao, url)
-                    VALUES (%s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING
                 """,
                 (article.title, article.source, publicado_em, article.url)
             )
