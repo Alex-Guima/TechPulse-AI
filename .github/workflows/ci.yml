@@ -7,7 +7,7 @@ on:
     branches: ["dev"]
 
 env:
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: '3.14'
 
 jobs:
   lint:
@@ -24,11 +24,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install flake8
+          pip install uv
+          uv sync && uv add flake8
 
       - name: Run Flake8 linter
-        run: flake8 .
+        run: uv run flake8 ./src
 
   test:
     runs-on: ubuntu-latest
@@ -44,11 +44,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest
+          pip install uv
+          uv sync && uv add pytest
 
       - name: Run tests
-        run: pytest
+        run: uv run pytest
   scan:
     runs-on: ubuntu-latest
     steps:
@@ -63,11 +63,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install bandit
+          pip install uv
+          uv sync && uv add bandit
 
       - name: Run Bandit security scan
-        run: bandit app/*.py -f json -o bandit_report.json -n 3 -lll
+        run: uv run bandit app/*.py -f json -o bandit_report.json -n 3 -lll
 
       - name: Upload Bandit report
         uses: actions/upload-artifact@v7
