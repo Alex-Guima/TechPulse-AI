@@ -32,6 +32,10 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.13', '3.14']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,16 +43,16 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install uv
-          uv sync && uv add pytest
+          uv sync --python ${{ matrix.python-version }} && uv add pytest
 
       - name: Run tests
-        run: uv run pytest
+        run: uv run --python ${{ matrix.python-version }} pytest
   scan:
     runs-on: ubuntu-latest
     steps:
@@ -67,9 +71,10 @@ jobs:
           uv sync && uv add bandit
 
       - name: Run Bandit security scan
-        run: uv run bandit app/*.py -f json -o bandit_report.json -n 3 -lll
+        run: uv run bandit -r ./src -f json -o bandit_report.json -n 3 -lll
 
       - name: Upload Bandit report
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: bandit-report
