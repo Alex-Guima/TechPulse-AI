@@ -71,9 +71,10 @@ jobs:
           uv sync && uv add bandit
 
       - name: Run Bandit security scan
-        run: uv run bandit app/*.py -f json -o bandit_report.json -n 3 -lll
+        run: uv run bandit -r ./src -f json -o bandit_report.json -n 3 -lll
 
       - name: Upload Bandit report
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: bandit-report
