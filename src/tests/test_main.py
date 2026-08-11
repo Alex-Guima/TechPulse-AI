@@ -3,7 +3,9 @@
 Cobrem a montagem das fontes (`build_service`), a formatação da saída
 no terminal (`print_articles`) e a orquestração do `main`. Nenhuma
 chamada de rede acontece: os coletores são apenas construídos, nunca
-executados, e o `main` recebe um serviço falso.
+executados, o `main` recebe um serviço falso e o `save_articles` é
+substituído por um dublê — caso contrário abriria conexão real com o
+PostgreSQL, que só existe dentro do docker-compose.
 """
 from datetime import UTC, datetime
 
@@ -163,34 +165,45 @@ def test_print_articles_handles_empty_list(capsys):
     assert "Título" not in output
 
 
-def test_main_loads_env_collects_and_prints(capsys, monkeypatch):
+def test_main_loads_env_collects_prints_and_saves(capsys, monkeypatch):
     calls = []
+    saved = []
 
     class FakeService:
         def collect_all(self):
             calls.append("collect_all")
             return [Article(title="Coletada", url="https://exemplo.com/1", source="Dev.to")]
 
+    def fake_save(articles):
+        calls.append("save_articles")
+        saved.extend(articles)
+
     monkeypatch.setattr(main_module, "load_dotenv", lambda: calls.append("load_dotenv"))
     monkeypatch.setattr(main_module, "build_service", lambda: FakeService())
+    monkeypatch.setattr(main_module, "save_articles", fake_save)
 
     main_module.main()
 
-    assert calls == ["load_dotenv", "collect_all"]
+    assert calls == ["load_dotenv", "collect_all", "save_articles"]
     assert "Coletada" in capsys.readouterr().out
+    assert [article.title for article in saved] == ["Coletada"]
 
 
 def test_main_does_not_touch_the_network_when_service_returns_nothing(capsys, monkeypatch):
+    saved = []
+
     class EmptyService:
         def collect_all(self):
             return []
 
     monkeypatch.setattr(main_module, "load_dotenv", lambda: None)
     monkeypatch.setattr(main_module, "build_service", lambda: EmptyService())
+    monkeypatch.setattr(main_module, "save_articles", saved.append)
 
     main_module.main()
 
     assert "Total de artigos coletados: 0" in capsys.readouterr().out
+    assert saved == [[]]
 
 
 def test_default_techcrunch_url_points_to_techcrunch():
