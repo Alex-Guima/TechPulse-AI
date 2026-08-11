@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: ["main"]
   push:
-    branches: ["dev"]
+    branches: ["main", "dev"]
 
 env:
   PYTHON_VERSION: '3.14'
@@ -72,6 +72,31 @@ jobs:
 
       - name: Run Bandit security scan
         run: uv run bandit -r ./src -f json -o bandit_report.json -n 3 -lll
+
+      - name: Verify Bandit actually scanned the source tree
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+
+          with open("bandit_report.json", encoding="utf-8") as report_file:
+              report = json.load(report_file)
+
+          scanned = sorted(name for name in report.get("metrics", {}) if name != "_totals")
+          errors = report.get("errors", [])
+
+          for error in errors:
+              print(f"::error::Bandit could not scan {error.get('filename')}: {error.get('reason')}")
+
+          if not scanned:
+              print("::error::Bandit scanned no files. Check that the scan target still exists.")
+              sys.exit(1)
+
+          print(f"Bandit scanned {len(scanned)} file(s).")
+
+          if errors:
+              sys.exit(1)
+          PY
 
       - name: Upload Bandit report
         if: always()
